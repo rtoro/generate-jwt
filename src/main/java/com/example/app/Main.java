@@ -24,10 +24,13 @@ public class Main {
 
         Gson gson = new Gson();
         Map properties = gson.fromJson(new FileReader(args[0]), Map.class);
+        String aud = (String) properties.get("client_email");
+        if(args.length > 1) {
+            aud = args[1] ;
+        }
 
         Date now = new Date();
         Date expTime = new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(3600));
-
         // Build the JWT payload
         JWTCreator.Builder token = JWT.create()
                 .withIssuedAt(now)
@@ -38,7 +41,8 @@ public class Main {
                 .withIssuer(properties.get("client_email").toString())
                 // Must be either your Endpoints service name, or match the value
                 // specified as the 'x-google-audience' in the OpenAPI document
-                .withAudience(properties.get("client_email").toString().split("@")[0]+".endpoints."+properties.get("project_id").toString()+".cloud.goog")
+                .withAudience(aud)
+                //.withAudience(properties.get("client_email").toString())
                 // Subject and email should match the service account's email
                 .withSubject(properties.get("client_email").toString())
                 .withClaim("email", properties.get("client_email").toString());
@@ -48,7 +52,7 @@ public class Main {
         GoogleCredential cred = GoogleCredential.fromStream(stream);
         RSAPrivateKey key = (RSAPrivateKey) cred.getServiceAccountPrivateKey();
         Algorithm algorithm = Algorithm.RSA256(null, key);
-        System.out.println("\n"+token.sign(algorithm)+"\n");
+        System.out.println(properties.get("client_email").toString()+"\n"+token.sign(algorithm)+"\n");
     }
 
 }
