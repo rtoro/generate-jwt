@@ -65,6 +65,15 @@
                     </descriptorRefs>
                     <finalName>generate-jwt</finalName>
                 </configuration>
+                <executions>
+                    <execution>
+                      <id>make-assembly</id>
+                      <phase>package</phase> 
+                      <goals>
+                          <goal>single</goal>
+                      </goals>
+                    </execution>
+                  </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
